@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+{% block css %}
+{% set ns1 = namespace(cnt=0)  %}
+{% for yesterdaystep in yesterdaysteps %}
+  .content .graph.{{yesterdaystep[0]}} {
+    display: flex;
+    flex-direction: row;
+    top: {{15 + 30 * ns1.cnt}}%;
+    width: 100%;    
+  }
+  .side .{{yesterdaystep[0]}} {
+    position: absolute;
+    top: {{15 + 30 * ns1.cnt}}%;
+    height: 15%;
+    width: 80%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .bar{{yesterdaystep[0]}} {
+    background: linear-gradient(90deg, {{bar_color[ns1.cnt][0]}}, {{bar_color[ns1.cnt][1]}});
+    width: {{yesterdaystep[3]}}%;
+  }
+  {% set ns1.cnt = ns1.cnt + 1 %}
+{% endfor %}
+
+{% endblock %}
+{% block content %}
+<h3>{{yesterday[0]}}({{DAYofWEEK[yesterday[1]][0]}})</h3>
+
+<div class="day">
+	<div class="side">
+  {% for yesterdaystep in yesterdaysteps %}
+	  <div class="{{yesterdaystep[0]}}">
+      <span>{{yesterdaystep[5]}}</span>
+    </div>
+  {% endfor %}
+	</div>
+  <div class="content">
+  {% for yesterdaystep in yesterdaysteps %}
+    <div class="graph {{yesterdaystep[0]}}">
+      <div class="bar{{yesterdaystep[0]}}"></div>
+      <div class="caption">
+        <p>{{yesterdaystep[5]}}</p>
+        <p>{{'{:,}'.format(yesterdaystep[2])}} 歩</p>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+</div>
+<div class="days">
+  <div class="headside"></div>
+  <div class="heading">
+    <div class="guide_1">
+      <span>{{'{:,}'.format(yesterdaymaxstep / 4)}}</span>
+    </div>
+    <div class="guide_2">
+      <span>{{'{:,}'.format(yesterdaymaxstep / 4 * 2)}}</span>
+    </div>
+    <div class="guide_3">
+      <span>{{'{:,}'.format(yesterdaymaxstep / 4 * 3)}}</span>
+    </div>
+    <div class="guide_4">
+      <span>{{'{:,}'.format(yesterdaymaxstep)}}</span>
+    </div>
+  </div>
+</div>
+<button id="chgView_button" value="一週間">一週間の歩数</button>
+{% endblock %}

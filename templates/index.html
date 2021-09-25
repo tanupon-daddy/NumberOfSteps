@@ -1,0 +1,153 @@
+{% extends "layout.html" %}
+{% block css %}
+{% set ns1 = namespace(cnt=0)  %}
+{% for yesterdaystep in yesterdaysteps %}
+  .content .graph.{{yesterdaystep[0]}} {
+    display: flex;
+    flex-direction: row;
+    top: {{15 + 30 * ns1.cnt}}%;
+    width: 100%;    
+  }
+  .side .{{yesterdaystep[0]}} {
+    position: absolute;
+    top: {{15 + 30 * ns1.cnt}}%;
+    height: 15%;
+    width: 80%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .bar{{yesterdaystep[0]}} {
+    background: linear-gradient(90deg, {{bar_color[ns1.cnt][0]}}, {{bar_color[ns1.cnt][1]}});
+    width: {{yesterdaystep[3]}}%;
+  }
+  {% set ns1.cnt = ns1.cnt + 1 %}
+{% endfor %}
+
+{% set ns2 = namespace(cnt=0) %}
+{% for avgstep in avgsteps %}
+  .vcontent .vgraphl.{{avgstep[0]}} {
+    top: {{100 - avgstep[2]}}%;
+    background: linear-gradient(90deg, {{bar_color[ns2.cnt][0]}}, {{bar_color[ns2.cnt][1]}});
+    animation-delay: 4.0s;
+    width: 100%;
+  }
+  .vsider .vside{{avgstep[0]}} {
+    position: absolute;
+    top: {{100 - avgstep[2]}}%;
+    height: 15%;
+    display: flex;
+    animation-delay: 4.0s;
+    flex-direction: column;
+  }
+  {% set ns2.cnt = ns2.cnt + 1 %}
+{% endfor %}
+
+{% set ns3 = namespace(cnt=0)  %}
+{% for weeklystep in weeklysteps %}
+  .vcontent .vgraph.{{weeklystep[0]}}{{weeklystep[1]}}{
+    height: {{weeklystep[4]}}%;
+    bottom: 0;
+    background: linear-gradient(90deg, {{bar_color[ns3.cnt % 3][0]}}, {{bar_color[ns3.cnt % 3][1]}});
+    width: calc(100%/21);
+    animation-delay: 2.5s;
+    left: calc(100%/21 * {{ns3.cnt}});
+  }  
+
+  {% set ns3.cnt = ns3.cnt + 1 %}
+{% endfor %}
+
+{% set ns4 = namespace(cnt=0)  %}
+{% for weekday in weekdays %}
+  .vhead{{weekday[0]}} {
+      position: absolute;
+      top: 10%;
+      width: calc(100%/7);
+      left: calc(100%/7 * {{ns4.cnt}});;
+      opacity: 1;
+      color:{{DAYofWEEK[weekday[2]][1]}};
+      text-align: center
+    }
+    {% set ns4.cnt = ns4.cnt + 1 %}
+{% endfor %}
+
+{% endblock %}
+{% block content %}
+<h3>{{yesterday[0]}}({{DAYofWEEK[yesterday[1]][0]}})</h3>
+
+<div class="day">
+	<div class="side">
+  {% for yesterdaystep in yesterdaysteps %}
+	  <div class="{{yesterdaystep[0]}}">
+      <span>{{yesterdaystep[5]}}</span>
+    </div>
+  {% endfor %}
+	</div>
+  <div class="content">
+  {% for yesterdaystep in yesterdaysteps %}
+    <div class="graph {{yesterdaystep[0]}}">
+      <div class="bar{{yesterdaystep[0]}}"></div>
+      <div class="caption">
+        <p>{{yesterdaystep[5]}}</p>
+        <p>{{'{:,}'.format(yesterdaystep[2])}} 歩</p>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+</div>
+<div class="days">
+  <div class="headside"></div>
+  <div class="heading">
+    <div class="guide_1">
+      <span>{{'{:,}'.format(yesterdaymaxstep / 4)}}</span>
+    </div>
+    <div class="guide_2">
+      <span>{{'{:,}'.format(yesterdaymaxstep / 4 * 2)}}</span>
+    </div>
+    <div class="guide_3">
+      <span>{{'{:,}'.format(yesterdaymaxstep / 4 * 3)}}</span>
+    </div>
+    <div class="guide_4">
+      <span>{{'{:,}'.format(yesterdaymaxstep)}}</span>
+    </div>
+  </div>
+</div>
+<h3>{{weekdays[0][1]}}({{DAYofWEEK[weekdays[0][2]][0]}}) ～ {{weekdays[6][1]}}({{DAYofWEEK[weekdays[6][2]][0]}})</h3>
+<div class="days">
+  <div class="side">
+    <div class="guide_top">
+      <span>{{'{:,}'.format(weeklymaxstep)}}</span>
+    </div>
+    <div class="guide_middle">
+      <span>{{'{:,}'.format(weeklymaxstep / 2)}}</span>
+    </div>
+  </div>
+	<div class="vcontent">
+    {% for weeklystep in weeklysteps %}
+    <div class="vgraph {{weeklystep[0]}}{{weeklystep[1]}}">
+      <span>{{'{:,}'.format(weeklystep[3])}}</span>
+    </div>
+    {% endfor %}
+    {% for avgstep in avgsteps %}
+    <div class="vgraphl {{avgstep[0]}}"></div>
+    {% endfor %}
+  </div>
+
+  <div class="vsider">
+    {% for avgstep in avgsteps %}
+	  <div class="vside{{avgstep[0]}}">
+	  	<span>{{avgstep[3]}}  一週間平均</span>
+	  	<span>{{'{:,}'.format(avgstep[1])}}　歩</span>
+	  </div>
+    {% endfor %}
+  </div>
+</div>
+<div class="days">
+  <div class="headside"></div>
+  <div class="heading">
+    {% for weekday in weekdays %}
+      <div class="vhead{{weekday[0]}}">{{weekday[1]}}({{DAYofWEEK[weekday[2]][0]}})</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
